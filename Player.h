@@ -158,11 +158,17 @@ private:
 
 	//ブリンクCD
 	float blinkCooldownTimer_ = 0.0f;
-	const float blinkCooldown_ = 5.0f;
+	const float blinkCooldown_ = 0.5f;
 
 	//デスフラグ
 	bool isDead_ = false;
 
 	static inline const float kDepth = 1.0f;
+	const float kBlinkDistance = 8.0f;
+
+	Vector3 forward_ = { 0.0f, 0.0f, 1.0f };
+	float blinkStartRotY_ = 0.0f;
+	float blinkTargetRotY_ = 0.0f;
+	//const float kBlinkDistance = 8.0f;
 
 };

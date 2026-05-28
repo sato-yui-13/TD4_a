@@ -56,7 +56,7 @@ void player::Blink()
 		blinkStartPos_ = worldTransform_.translation_;
 		blinkEndPos_ = blinkStartPos_;
 
-		const float kBlinkDistance = 8.0f;
+		//n nconst float kBlinkDistance = 8.0f;
 
 		if (Input::GetInstance()->PushKey(DIK_W)) 
 		{
@@ -83,61 +83,88 @@ void player::Blink()
 void player::InputMove()
 {
 	// 左右加速
+	Vector3 moveDirection = { 0,0,0 };
 
-	velocity_.x = 0.0f;
-	velocity_.z = 0.0f;
-	if (Input::GetInstance()->PushKey(DIK_D)) 
-	{
-		velocity_.x = 0.1f;
+	// ==========================
+	// 移動処理（押してる間動く）
+	// ==========================
+
+	if (Input::GetInstance()->PushKey(DIK_D)) {
+		moveDirection.x += 1.0f;
 	}
 
-	if (Input::GetInstance()->PushKey(DIK_A)) 
-	{
-		velocity_.x = -0.1f;
+	if (Input::GetInstance()->PushKey(DIK_A)) {
+		moveDirection.x -= 1.0f;
 	}
 
-	if (Input::GetInstance()->PushKey(DIK_W)) 
-	{
-		velocity_.z = 0.1f;
+	if (Input::GetInstance()->PushKey(DIK_W)) {
+		moveDirection.z += 1.0f;
 	}
 
-	if (Input::GetInstance()->PushKey(DIK_S)) 
-	{
-		velocity_.z = -0.1f;
+	if (Input::GetInstance()->PushKey(DIK_S)) {
+		moveDirection.z -= 1.0f;
 	}
 
-	if (onGround_) 
-	{
-		// ジャンプ（1回だけ）
-		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) 
-		{
-			velocity_.y = kJumpAcceleration;
+	// ==========================
+	// 向き変更（押した瞬間だけ）
+	// ==========================
+
+	if (Input::GetInstance()->TriggerKey(DIK_D)) {
+		worldTransform_.rotation_.y = 1.57f;
+	}
+
+	if (Input::GetInstance()->TriggerKey(DIK_A)) {
+		worldTransform_.rotation_.y = -1.57f;
+	}
+
+	if (Input::GetInstance()->TriggerKey(DIK_W)) {
+		worldTransform_.rotation_.y = 0.0f;
+	}
+
+	if (Input::GetInstance()->TriggerKey(DIK_S)) {
+		worldTransform_.rotation_.y = 3.14f;
+	}
+
+	// ==========================
+	// velocity に反映
+	// ==========================
+
+	velocity_.x = moveDirection.x * 0.1f;
+	velocity_.z = moveDirection.z * 0.1f;
+
+	// ジャンプ
+	if (onGround_) {
+
+		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+
+			velocity_.y = 0.6f;
+
 			onGround_ = false;
 		}
 	}
 
-// 落下強化
-// ★ 空中のときだけ重力
-	if (!onGround_) 
-	{
-		if (velocity_.y > 0) 
-		{
-			// 上昇中（弱い重力）
-			velocity_.y -= 0.003f;
-		} 
-		else 
-		{
-			// 落下中（強い重力）
-			velocity_.y -= 0.1f;
-			// 落下速度制限
-			velocity_.y = std::max(velocity_.y, -0.5f);
-		}
+	// 重力
+	if (!onGround_) {
 
-		// 微小値カット
-		if (std::abs(velocity_.x) <= 0.0001f) 
-		{
-			velocity_.x = 0.0f;
-		}
+		velocity_.y -= 0.03f;
+
+		velocity_.y = std::max(velocity_.y, -1.0f);
+	}
+
+	// 移動
+	worldTransform_.translation_.y += velocity_.y;
+
+	// 地面高さ
+	const float groundY = 1.0f;
+
+	// 着地
+	if (worldTransform_.translation_.y <= groundY) {
+
+		worldTransform_.translation_.y = groundY;
+
+		velocity_.y = 0.0f;
+
+		onGround_ = true;
 	}
 
 }
@@ -597,22 +624,30 @@ void player::Update()
 	}
 
 	// 接地判定
-	if (onGround_) 
-	{
-		// ジャンプ開始
-		if (velocity_.y > 0.0f) 
-		{
+	if (onGround_) {
+
+		// 上方向へ動いたら空中へ
+		if (velocity_.y > 0.0f) {
+
 			onGround_ = false;
 		}
-	} 
-	else 
-	{
+
+	} else {
+
 		// 着地
-		if (landing) 
-		{
-			worldTransform_.translation_.y = 1.0f;
-			velocity_.x *= (1.0f - kAttenuation);
+		if (landing) {
+
+			// 地面にぴったり合わせる
+			worldTransform_.translation_.y += 0.1f;
+
+
+			// 落下停止
 			velocity_.y = 0.0f;
+
+			// 横移動減衰
+			velocity_.x *= (1.0f - kAttenuation);
+			velocity_.z *= (1.0f - kAttenuation);
+
 			onGround_ = true;
 		}
 	}
