@@ -283,7 +283,6 @@ void GameScene::Update()
 			}
 		}
 
-
 		//ボス倒したらクリア画面に行く
 		if (boss_->IsDead())
 		{

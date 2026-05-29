@@ -3,6 +3,100 @@
 #include "GameScene.h"
 
 using namespace KamataEngine;
+//シーン切り替え
+enum class Scene {
+	kUnknown = 0,
+	kTitle,
+	kGame,
+	kClear,
+	kOver,
+};
+// 現在シーン（型）
+Scene scene = Scene::kUnknown;
+
+// 02_12 29枚目
+void ChangeScene() {
+
+	switch (scene) {
+
+	case Scene::kTitle:
+		//if (titleScene->IsFinished()) {
+		//	// シーン変更
+		//	scene = Scene::kGame;
+		//	delete titleScene;
+
+
+
+		//	titleScene = nullptr;
+		//	gameScene = new GameScene;
+		//	gameScene->Initialize();
+		//}
+		break;
+
+	case Scene::kGame:
+		// 02_12 30枚目
+		//if (gameScene->IsFinished()) {
+		//	// シーン変更
+		//	scene = Scene::kTitle;
+		//	delete gameScene;
+		//	gameScene = nullptr;
+		//	//titleScene = new TitleScene;
+		//	titleScene->Initialize();
+
+
+
+		//} else if (gameScene->IsFinished()) {
+		//	// HP0で死亡flag
+		//	scene = Scene::kOver;
+		//	//titleScene = new TitleScene;
+		//	titleScene->Initialize();
+		//	delete gameScene;
+		//	gameScene = nullptr;
+		//}
+		break;
+
+	case Scene::kClear:
+		break;
+
+	case Scene::kOver:
+		break;
+	}
+}
+
+//void UpDataScene() {
+//
+//	switch (scene) {
+//	case Scene::kTitle:
+//		titleScene->Update();
+//		break;
+//	case Scene::kGame:
+//		gameScene->Update();
+//		break;
+//	case Scene::kClear:
+//		break;
+//	case Scene::kOver:
+//		break;
+//	}
+//}
+//
+//// 02_12 32枚目
+//void DrawScene() {
+//	switch (scene) {
+//	case Scene::kTitle:
+//		titleScene->Draw();
+//		break;
+//	case Scene::kGame:
+//		gameScene->Draw();
+//		break;
+//	case Scene::kClear:
+//
+//		break;
+//	case Scene::kOver:
+//
+//		break;
+//	}
+//}
+//
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
