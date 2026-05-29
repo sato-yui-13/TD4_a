@@ -82,49 +82,48 @@ void player::Blink()
 
 void player::InputMove()
 {
-	// 左右加速
+	// ==========================
+// 移動入力
+// ==========================
 	Vector3 moveDirection = { 0,0,0 };
 
+	if (Input::GetInstance()->PushKey(DIK_D)) moveDirection.x += 1.0f;
+	if (Input::GetInstance()->PushKey(DIK_A)) moveDirection.x -= 1.0f;
+	if (Input::GetInstance()->PushKey(DIK_W)) moveDirection.z += 1.0f;
+	if (Input::GetInstance()->PushKey(DIK_S)) moveDirection.z -= 1.0f;
+
 	// ==========================
-	// 移動処理（押してる間動く）
+	// 斜め対応：正規化
 	// ==========================
+	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f)
+	{
+		float len = sqrtf(moveDirection.x * moveDirection.x +
+			moveDirection.z * moveDirection.z);
 
-	if (Input::GetInstance()->PushKey(DIK_D)) {
-		moveDirection.x += 1.0f;
-	}
-
-	if (Input::GetInstance()->PushKey(DIK_A)) {
-		moveDirection.x -= 1.0f;
-	}
-
-	if (Input::GetInstance()->PushKey(DIK_W)) {
-		moveDirection.z += 1.0f;
-	}
-
-	if (Input::GetInstance()->PushKey(DIK_S)) {
-		moveDirection.z -= 1.0f;
+		moveDirection.x /= len;
+		moveDirection.z /= len;
 	}
 
 	// ==========================
-	// 向き変更（押した瞬間だけ）
+	// 向き変更（押した方向へ）
 	// ==========================
+	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f)
+	{
+		// 自然に向くなら lerp を使う
+		// worldTransform_.rotation_.y = std::lerp(worldTransform_.rotation_.y,
+		//                                        atan2f(moveDirection.x, moveDirection.z),
+		//                                        0.2f);
 
-	if (Input::GetInstance()->TriggerKey(DIK_D)) {
-		worldTransform_.rotation_.y = 1.57f;
+		// 即座に向きを変える場合
+		worldTransform_.rotation_.y = atan2f(moveDirection.x, moveDirection.z);
 	}
 
-	if (Input::GetInstance()->TriggerKey(DIK_A)) {
-		worldTransform_.rotation_.y = -1.57f;
-	}
-
-	if (Input::GetInstance()->TriggerKey(DIK_W)) {
-		worldTransform_.rotation_.y = 0.0f;
-	}
-
-	if (Input::GetInstance()->TriggerKey(DIK_S)) {
-		worldTransform_.rotation_.y = 3.14f;
-	}
-
+	// ==========================
+	// 移動反映
+	// ==========================
+	float speed = 0.2f; // 好きな速度に調整
+	worldTransform_.translation_.x += moveDirection.x * speed;
+	worldTransform_.translation_.z += moveDirection.z * speed;
 	// ==========================
 	// velocity に反映
 	// ==========================
