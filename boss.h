@@ -33,6 +33,11 @@ public:
 	//プレイヤーとのボックス当たり判定
 	AABB GetAABB() const;
 	void SetWorldPosition(const Vector3& pos);
+	//hp計算用の
+	void TakeDamage(int damage);
+	int GetHP() const { return hp_; }
+	//死んだとき
+	bool IsDead() const { return hp_ <= 0; }
 private:
 	//上下に動く敵をつくる
 
@@ -93,5 +98,6 @@ private:
 	Vector3 bulletVelocity_;       // ★新設：直線射撃の進む速度ベクトル
 	// --- Boss.h の private 変数群に追記 ---
 	float attackStartRotationY_ = 0.0f; // ★新設：攻撃開始時のボスの向きを記録する変数
-
+	
+	int hp_ = 50; // ← ボスのHP
 };

@@ -212,6 +212,7 @@ void GameScene::Update()
 			if (IsCollision(attackBox, boss_->GetAABB()))
 			{
 				std::cout << "ヒット！\n";
+				boss_->TakeDamage(2);
 			}
 		}
 
@@ -281,6 +282,15 @@ void GameScene::Update()
 				block->TransferMatrix();
 			}
 		}
+
+
+		//ボス倒したらクリア画面に行く
+		if (boss_->IsDead())
+		{
+			phase_ = Phase::kClear;
+			std::cout << "CLEAR!!\n";
+		}
+
 
 		break;
 	case Phase::kDeath:

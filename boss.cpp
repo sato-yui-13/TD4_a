@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <random>
 #include <cmath>
+#include <iostream>
 
 using namespace KamataEngine;
 
@@ -74,6 +75,18 @@ AABB boss::GetAABB() const
 void boss::SetWorldPosition(const Vector3& pos)
 {
 	worldTransform_.translation_ = pos;
+}
+
+void boss::TakeDamage(int damage)
+{
+	hp_ -= damage;
+
+	if (hp_ < 0)
+	{
+		hp_ = 0;
+	}
+
+	std::cout << "ボスHP: " << hp_ << std::endl;
 }
 
 void boss::Update()
