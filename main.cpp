@@ -16,52 +16,50 @@ enum class Scene {
 	kOver,
 };
 // 現在シーン（型）
-Scene scene = Scene::kUnknown;
-
+Scene scene = Scene::kTitle;
 //ゲームシーンのインスタンス生成
 // 02_12 29枚目
-//void ChangeScene() {
-//	auto input = Input::GetInstance();
-//
-//	
-//	switch (scene) {
-//
-//	case Scene::kTitle:
-//		if (input->PushKey(DIK_SPACE)) {
-//			scene = Scene::kGame;
-//
-//			if (!gameScene) {
-//				gameScene = new GameScene;
-//				gameScene->Initialize();
-//			}
-//		}
-//		break;
-//
-//	case Scene::kGame:
-//		if (input->PushKey(DIK_E)) {
-//			scene = Scene::kTitle;
-//
-//			delete gameScene;
-//			gameScene = nullptr;
-//		}
-//		break;
-//
-//	case Scene::kClear:
-//
-//	
-//
-//		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-//			scene = Scene::kTitle;
-//		}
-//
-//		break;
-//
-//		break;
-//
-//	case Scene::kOver:
-//		break;
-//	}
-//}
+void ChangeScene() {
+	
+	
+	switch (scene) {
+
+	case Scene::kTitle:
+		if (Input::GetInstance()->PushKey(DIK_L)) {
+			scene = Scene::kGame;
+
+			if (!gameScene) {
+				gameScene = new GameScene;
+				gameScene->Initialize();
+			}
+		}
+		break;
+
+	case Scene::kGame:
+		if (Input::GetInstance()->PushKey(DIK_L)) {
+			scene = Scene::kClear;
+
+			delete gameScene;
+			gameScene = nullptr;
+		}
+		break;
+
+	case Scene::kClear:
+
+	
+
+		if (Input::GetInstance()->PushKey(DIK_L)) {
+			scene = Scene::kTitle;
+		}
+
+		break;
+
+
+
+	case Scene::kOver:
+		break;
+	}
+}
 
 void UpDataScene() {
 	//
@@ -119,14 +117,15 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 		{
 			break;
 		}
-		//ChangeScene();   // ★これ足す
-		UpDataScene();   // ★これ足す
+		ChangeScene();
+		UpDataScene();
+		DrawScene();
 
 		// 描画更新
 		dxCommon->PreDraw();
 
 		//ゲームシーンの描画
-		///gameScene->Draw();
+		//gameScene->Draw();
 		DrawScene();     // ★これも足す
 
 		// 描画終了
