@@ -27,8 +27,8 @@ public:
 
 	//プレイヤーの攻撃の当たり判定
 	//bool IsCollision(const AABB& a, const AABB& b);
-	//当たり判定
-	AABB GetRightWallAABB();
+	//攻撃した時の当たり判定
+	AABB GetAABB() const;
 
 private:
 

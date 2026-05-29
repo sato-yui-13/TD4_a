@@ -438,6 +438,11 @@ void player::CheckMapCollisionRight(CollisionMapInfo& info)
 
 }
 
+void player::SetWorldPosition(const Vector3& pos)
+{
+	worldTransform_.translation_ = pos;
+}
+
 void player::CheckMapCollisionLeft(CollisionMapInfo& info)
 {
 
@@ -594,7 +599,15 @@ AABB player::GetAABB() const
 
 	return aabb;
 }
+void player::SetPosition(const Vector3& pos)
+{
+	worldTransform_.translation_ = pos;
+}
 
+Vector3 player::GetPosition() const
+{
+	return worldTransform_.translation_;
+}
 
 void player::Update()
 {

@@ -1,7 +1,69 @@
 ﻿#include "GameScene.h"
 #include <iostream>
+#include <algorithm>
+#undef min
 
 using namespace KamataEngine;
+
+Vector3 GetOverlap(const AABB& a, const AABB& b)
+{
+	Vector3 overlap;
+
+	overlap.x = std::min(a.max.x - b.min.x, b.max.x - a.min.x);
+	overlap.y = std::min(a.max.y - b.min.y, b.max.y - a.min.y);
+	overlap.z = std::min(a.max.z - b.min.z, b.max.z - a.min.z);
+
+	return overlap;
+}
+void ResolveCollision(Vector3& playerPos, Vector3& bossPos, const AABB& playerBox, const AABB& bossBox)
+{
+	Vector3 overlap;
+
+	overlap.x = std::min(playerBox.max.x - bossBox.min.x, bossBox.max.x - playerBox.min.x);
+	overlap.y = std::min(playerBox.max.y - bossBox.min.y, bossBox.max.y - playerBox.min.y);
+	overlap.z = std::min(playerBox.max.z - bossBox.min.z, bossBox.max.z - playerBox.min.z);
+
+	if (overlap.x <= overlap.y && overlap.x <= overlap.z)
+	{
+		float push = overlap.x / 2.0f;
+
+		if (playerPos.x < bossPos.x)
+		{
+			playerPos.x -= push;
+			bossPos.x += push;
+		} else
+		{
+			playerPos.x += push;
+			bossPos.x -= push;
+		}
+	} else if (overlap.y <= overlap.x && overlap.y <= overlap.z)
+	{
+		float push = overlap.y / 2.0f;
+
+		if (playerPos.y < bossPos.y)
+		{
+			playerPos.y -= push;
+			bossPos.y += push;
+		} else
+		{
+			playerPos.y += push;
+			bossPos.y -= push;
+		}
+	} else
+	{
+		float push = overlap.z / 2.0f;
+
+		if (playerPos.z < bossPos.z)
+		{
+			playerPos.z -= push;
+			bossPos.z += push;
+		} else
+		{
+			playerPos.z += push;
+			bossPos.z -= push;
+		}
+	}
+}
 
 GameScene::~GameScene()
 {
@@ -106,15 +168,22 @@ void GameScene::Update()
 
 
 		// ここで当たり判定
-		if (IsCollision(player_->GetAABB(), boss_->GetAABB()))
+		//AABB取得
+		AABB playerBox = player_->GetAABB();
+		AABB bossBox = boss_->GetAABB();
+
+		//衝突してたら押し戻し
+		if (IsCollision(playerBox, bossBox))
 		{
-			std::cout << "プレイヤーとボスが衝突！\n";
+			ResolveCollision(playerPos, bossPos, playerBox, bossBox);
+
+			// ★ここ超重要：位置をオブジェクトに反映
+			player_->SetWorldPosition(playerPos);
+			boss_->SetWorldPosition(bossPos);
 		}
 
 
-
-
-
+		
 
 
 

@@ -70,6 +70,12 @@ AABB boss::GetAABB() const
 
 	return aabb;
 }
+
+void boss::SetWorldPosition(const Vector3& pos)
+{
+	worldTransform_.translation_ = pos;
+}
+
 void boss::Update()
 {
 

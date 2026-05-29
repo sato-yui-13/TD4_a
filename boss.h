@@ -32,7 +32,7 @@ public:
 
 	//プレイヤーとのボックス当たり判定
 	AABB GetAABB() const;
-
+	void SetWorldPosition(const Vector3& pos);
 private:
 	//上下に動く敵をつくる
 

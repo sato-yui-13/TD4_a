@@ -42,6 +42,10 @@ public:
 	// 02_07 スライド4枚目
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
+	//ha
+	void SetPosition(const Vector3& pos);
+	Vector3 GetPosition() const;
+
 
 	struct CollisionMapInfo 
 	{
@@ -83,7 +87,7 @@ public:
 	}
 
 	bool IsDead() const { return isDead_; }
-
+	void SetWorldPosition(const Vector3& pos);
 private:
 
 	// ワールド変換データ

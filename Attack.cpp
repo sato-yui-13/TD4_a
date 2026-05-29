@@ -66,6 +66,28 @@ void Attack::Action()
 
 }
 
+
+AABB Attack::GetAABB() const
+{
+	Vector3 p = worldTransform_.translation_;
+
+	AABB aabb;
+
+	aabb.min = {
+		p.x - size_.x,
+		p.y - size_.y,
+		p.z - size_.z
+	};
+
+	aabb.max = {
+		p.x + size_.x,
+		p.y + size_.y,
+		p.z + size_.z
+	};
+
+	return aabb;
+}
+
 bool Attack::CheckMapChipCollisionRight()
 { // 右側の座標
 	Vector3 rightPos = worldTransform_.translation_;
@@ -97,35 +119,13 @@ bool Attack::CheckMapChipCollisionRight()
 	return false;
 }
 
-//当たり判定
-AABB Attack::GetRightWallAABB()
-{
-	AABB aabb;
 
-	Vector3 pos = worldTransform_.translation_;
-
-	aabb.min = {
-		pos.x + 0.8f,
-		pos.y - 1.0f,
-		pos.z - 1.0f
-	};
-
-	aabb.max = {
-		pos.x + 1.0f,
-		pos.y + 1.0f,
-		pos.z + 1.0f
-	};
-
-	return aabb;
-}
 
 void Attack::Update() {
 	//単発の攻撃
 	Action();
 
 	CheckMapChipCollisionRight();
-
-	GetRightWallAABB();
 
 	// 行列更新
 	worldTransform_.TransferMatrix();
