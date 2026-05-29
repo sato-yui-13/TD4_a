@@ -34,7 +34,8 @@ public:
 	/// </summary>
 	void Draw();
 
-
+	//ボスとのボックス当たり判定
+	AABB GetAABB() const;
 	// 02_10 10枚目 ワールド座標を取得
 	Vector3 GetWorldPosition();
 

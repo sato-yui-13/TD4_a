@@ -56,7 +56,20 @@ void WorldTransformUpdate(WorldTransform& worldTransform)
 	// 定数バッファに転送する
 	worldTransform.TransferMatrix();
 }
+AABB boss::GetAABB() const
+{
+	// ボスの中心座標
+	Vector3 center = worldTransform_.translation_;
 
+	// ボスの当たり判定サイズ（プレイヤーより大きめに設定）
+	Vector3 halfSize = { 1.0f, 2.0f, 1.0f };
+
+	AABB aabb;
+	aabb.min = { center.x - halfSize.x, center.y - halfSize.y, center.z - halfSize.z };
+	aabb.max = { center.x + halfSize.x, center.y + halfSize.y, center.z + halfSize.z };
+
+	return aabb;
+}
 void boss::Update()
 {
 

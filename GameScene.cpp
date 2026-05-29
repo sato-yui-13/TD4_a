@@ -1,4 +1,5 @@
 ﻿#include "GameScene.h"
+#include <iostream>
 
 using namespace KamataEngine;
 
@@ -100,6 +101,23 @@ void GameScene::Update()
 		//敵の更新
 		boss_->Update();
 		Vector3 bossPos = boss_->GetWorldPosition();
+
+
+
+
+		// ここで当たり判定
+		if (IsCollision(player_->GetAABB(), boss_->GetAABB()))
+		{
+			std::cout << "プレイヤーとボスが衝突！\n";
+		}
+
+
+
+
+
+
+
+
 
 		//ブロックの更新
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)

@@ -579,6 +579,23 @@ Vector3 player::CornerPosition(const Vector3& center, Corner corner)
 	return center + offsetTable[static_cast<uint32_t>(corner)];
 }
 
+
+AABB player::GetAABB() const
+{
+	// プレイヤーの中心座標
+	Vector3 center = worldTransform_.translation_;
+
+	// 当たり判定の半サイズをその場で指定
+	Vector3 halfSize = { 0.5f, 1.0f, 0.5f };
+
+	AABB aabb;
+	aabb.min = { center.x - halfSize.x, center.y - halfSize.y, center.z - halfSize.z };
+	aabb.max = { center.x + halfSize.x, center.y + halfSize.y, center.z + halfSize.z };
+
+	return aabb;
+}
+
+
 void player::Update()
 {
 	// 移動入力(02_07 スライド10枚目)
@@ -716,3 +733,5 @@ void player::Draw()
 {
 	model_->Draw(worldTransform_, *camera_);
 }
+
+

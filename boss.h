@@ -29,6 +29,10 @@ public:
 	//アタックポジション
 	Vector3 attackPosition_ = { 0.0f,1.0f,1.0f };
 
+
+	//プレイヤーとのボックス当たり判定
+	AABB GetAABB() const;
+
 private:
 	//上下に動く敵をつくる
 
