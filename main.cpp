@@ -36,12 +36,13 @@ void ChangeScene() {
 		break;
 
 	case Scene::kGame:
-		if (Input::GetInstance()->PushKey(DIK_L)) {
-			scene = Scene::kClear;
+			if (gameScene->clearFlag == 1) {
+				scene = Scene::kClear;
+				gameScene = new GameScene;
+				gameScene->Initialize();
 
-			delete gameScene;
-			gameScene = nullptr;
-		}
+			}
+		
 		break;
 
 	case Scene::kClear:

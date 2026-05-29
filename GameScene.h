@@ -8,6 +8,7 @@
 #include "CameraController.h"
 #include <vector>
 
+
 //ゲームシーン
 class GameScene
 {
@@ -32,6 +33,8 @@ public:
 		kClear
 	};
 
+	//クリアフラグ
+	int clearFlag = false;
 	//フェーズの切り替え
 	void ChangePhase();
 

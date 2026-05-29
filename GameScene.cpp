@@ -286,7 +286,10 @@ void GameScene::Update()
 		//ボス倒したらクリア画面に行く
 		if (boss_->IsDead())
 		{
-			phase_ = Phase::kClear;
+			clearFlag = true;
+			
+			//phase_ = Phase::kClear;   // 内部フラグは残す
+			///scene_ = Scene::kClear;    // ← これで画面も切り替わる
 			std::cout << "CLEAR!!\n";
 		}
 
