@@ -82,10 +82,13 @@ void player::Blink()
 
 void player::InputMove()
 {
+	
+	
+	
 	// ==========================
-// 移動入力
-// ==========================
-	Vector3 moveDirection = { 0,0,0 };
+    // 移動入力（押している間移動）
+   // ==========================
+	Vector3 moveDirection = { 0, 0, 0 };
 
 	if (Input::GetInstance()->PushKey(DIK_D)) moveDirection.x += 1.0f;
 	if (Input::GetInstance()->PushKey(DIK_A)) moveDirection.x -= 1.0f;
@@ -93,29 +96,20 @@ void player::InputMove()
 	if (Input::GetInstance()->PushKey(DIK_S)) moveDirection.z -= 1.0f;
 
 	// ==========================
-	// 斜め対応：正規化
+	// 向き変更（押した瞬間だけ）
 	// ==========================
-	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f)
+	if (Input::GetInstance()->TriggerKey(DIK_D))
 	{
-		float len = sqrtf(moveDirection.x * moveDirection.x +
-			moveDirection.z * moveDirection.z);
-
-		moveDirection.x /= len;
-		moveDirection.z /= len;
-	}
-
-	// ==========================
-	// 向き変更（押した方向へ）
-	// ==========================
-	if (moveDirection.x != 0.0f || moveDirection.z != 0.0f)
+		worldTransform_.rotation_.y = 1.57f; // 右
+	} else if (Input::GetInstance()->TriggerKey(DIK_A))
 	{
-		// 自然に向くなら lerp を使う
-		// worldTransform_.rotation_.y = std::lerp(worldTransform_.rotation_.y,
-		//                                        atan2f(moveDirection.x, moveDirection.z),
-		//                                        0.2f);
-
-		// 即座に向きを変える場合
-		worldTransform_.rotation_.y = atan2f(moveDirection.x, moveDirection.z);
+		worldTransform_.rotation_.y = -1.57f; // 左
+	} else if (Input::GetInstance()->TriggerKey(DIK_W))
+	{
+		worldTransform_.rotation_.y = 0.0f; // 前
+	} else if (Input::GetInstance()->TriggerKey(DIK_S))
+	{
+		worldTransform_.rotation_.y = 3.14f; // 後ろ
 	}
 
 	// ==========================
@@ -124,6 +118,8 @@ void player::InputMove()
 	float speed = 0.2f; // 好きな速度に調整
 	worldTransform_.translation_.x += moveDirection.x * speed;
 	worldTransform_.translation_.z += moveDirection.z * speed;
+	
+	
 	// ==========================
 	// velocity に反映
 	// ==========================
