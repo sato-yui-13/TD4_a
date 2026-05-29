@@ -24,7 +24,7 @@ void player::Initialize(Model* model, Camera* camera, const Vector3& position)
 
 	worldTransform_.TransferMatrix();
 	
-	attack_ = new Attack();
+	//attack_ = new Attack();
 }
 
 void player::Blink()

@@ -3,6 +3,8 @@
 #include "MapChipField.h"
 #include "UpDate.h"
 #include "MyMath.h"
+#include "boss.h"
+#include "player.h"
 
 class Attack
 {
@@ -22,13 +24,14 @@ public:
 	//弾が出てるときだけ動く
 	int isAction = false;
 
-	//AA攻撃右側だけ
-	bool CheckMapChipCollisionRight();
-
+	
 	//プレイヤーの攻撃の当たり判定
 	//bool IsCollision(const AABB& a, const AABB& b);
 	//攻撃した時の当たり判定
 	AABB GetAABB() const;
+
+	// これが IsAttacking()。外から状態を確認するための関数
+	bool IsAttacking() const { return isAttacking_; }
 
 private:
 
@@ -64,7 +67,10 @@ private:
 	Model* modelAction = nullptr;
 
 	//フラグで攻撃のイラスト表示
-	int action = false;
+	bool isAttacking_ = false;
+	//攻撃のCD
+	float attackTimer_ = 0.0f;
+	const float attackDuration_ = 0.2f; // 攻撃が出てる時間
 
 	//スピード
 	int actionSpeed = 1;
@@ -72,7 +78,6 @@ private:
 	//AA
 	Vector3 size_ = { 1.0f, 1.0f, 1.0f };
 	static inline const float kWidth = 2.0f;
-
 
 
 

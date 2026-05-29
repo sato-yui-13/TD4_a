@@ -4,6 +4,7 @@
 #include "MyMath.h"
 #include "Player.h"
 #include "boss.h"
+#include "Attack.h"
 #include "CameraController.h"
 #include <vector>
 
@@ -54,7 +55,7 @@ private:
 	player* player_;
 
 	boss* boss_;
-
+	Attack* attack_;
 	CameraController* cameraController_ = nullptr;
 
 	//--------------------3Dモデル----------------------//
@@ -62,6 +63,7 @@ private:
 	KamataEngine::Model* modelBlock_ = nullptr;
 	KamataEngine::Model* modelPlayer_ = nullptr;
 	KamataEngine::Model* modelBoss_ = nullptr;
+	KamataEngine::Model* modelattack_ = nullptr;
 
 	//デバックカメラ有効
 	bool isDebugCameraActive_ = false;

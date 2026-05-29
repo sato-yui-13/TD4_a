@@ -128,10 +128,10 @@ void GameScene::Initialize()
 	modelBlock_ = Model::CreateFromOBJ("block");/*ブロック*/
 	modelPlayer_ = Model::CreateFromOBJ("player", true);/*自機*/
 	modelBoss_ = Model::CreateFromOBJ("boss", true);/*ボス*/
-
+	modelattack_ = Model::CreateFromOBJ("action", true);
 	GenerateBlocks();
 
-	
+
 	player_->SetMapChipField(mapChipField_);
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 5);
@@ -142,8 +142,11 @@ void GameScene::Initialize()
 
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	boss_->Initialize(modelBoss_, &camera_, BossPosition);
+	
+	
+	attack_ = new Attack();
+	attack_->Initialize(modelattack_, &camera_, playerPosition);
 
-	cameraController_->Reset();
 
 	//ゲームタイトルから開始
 	phase_ = Phase::kPlay;
@@ -183,7 +186,34 @@ void GameScene::Update()
 		}
 
 
-		
+		// GameScene内
+		attack_->Update(); // 攻撃の時間管理と入力処理
+
+		// 攻撃中ならボスとの判定
+		if (attack_->IsAttacking())
+		{
+			// プレイヤー位置
+			//Vector3 playerPos = player_->GetWorldPosition();
+
+			// プレイヤーの向き
+			float angle = player_->GetWorldTransform().rotation_.y;
+			Vector3 forward = { sinf(angle), 0.0f, cosf(angle) };
+
+			// 攻撃範囲
+			AABB attackBox = player_->GetAABB();
+			float attackRange = 1.5f;
+
+			attackBox.min.x += forward.x * attackRange;
+			attackBox.max.x += forward.x * attackRange;
+			attackBox.min.z += forward.z * attackRange;
+			attackBox.max.z += forward.z * attackRange;
+
+			// ボスとの当たり判定
+			if (IsCollision(attackBox, boss_->GetAABB()))
+			{
+				std::cout << "ヒット！\n";
+			}
+		}
 
 
 
@@ -223,8 +253,7 @@ void GameScene::Update()
 			camera_.matProjection = debugCamera_->GetCamera().matProjection;
 			//ビュープロジェクション行列の転送
 			camera_.TransferMatrix();
-		} 
-		else
+		} else
 		{
 			//ビュープロジェクション行列の更新と転送
 			camera_.UpdateMatrix();
@@ -295,8 +324,7 @@ void GameScene::Update()
 			camera_.matProjection = debugCamera_->GetCamera().matProjection;
 			//ビュープロジェクション行列の転送
 			camera_.TransferMatrix();
-		} 
-		else
+		} else
 		{
 			//ビュープロジェクション行列の更新と転送
 			camera_.UpdateMatrix();
@@ -317,7 +345,7 @@ void GameScene::Update()
 void GameScene::Draw()
 {
 
-	
+
 	Model::PreDraw();
 
 	player_->Draw();

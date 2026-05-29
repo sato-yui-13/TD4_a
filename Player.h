@@ -151,7 +151,7 @@ private:
 	// 02_08スライド27枚目 着地時の速度減衰率
 	static inline const float kAttenuationWall = 0.2f;
 
-	Attack* attack_;
+	//Attack* attack_;
 
 	bool isBlink_ = false;
 

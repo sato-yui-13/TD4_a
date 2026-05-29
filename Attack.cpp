@@ -4,6 +4,7 @@
 #include <cassert>
 #include <numbers>
 #include "KamataEngine.h"
+#include <iostream>
 
 
 void Attack::Initialize(Model* model, Camera* camera, const Vector3& position) {
@@ -28,7 +29,7 @@ void Attack::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	worldTransformAction.TransferMatrix();
 
 	mapChipField_ = new MapChipField();
-
+	
 }
 void Attack::SetPlayerPosition(const Vector3& pos) {
 	playerPosition_ = pos;
@@ -41,24 +42,23 @@ void Attack::Action()
 	//AAの攻撃にしよ
 	//playerの位置に
 	// Jキーで攻撃
-	if (Input::GetInstance()->TriggerKey(DIK_J)) {
-		// プレイヤー位置から発射
-		positionAction = playerPosition_; // ←ここ重要
-		isAction = true;
-
-	}
-	if (isAction) {
-
-		positionAction.x += actionSpeed;
+	if (Input::GetInstance()->TriggerKey(DIK_J))
+	{
+		isAttacking_ = true;
+		attackTimer_ = attackDuration_;
 	}
 
-	if (!CheckMapChipCollisionRight()) {
+	//攻撃の時間
+	if (isAttacking_)
+	{
+		attackTimer_ -= 1.0f / 60.0f;
 
-		// 右側がブロックに当たった
-		//isAction = false;
-		positionAction.x += actionSpeed;
-		worldTransform_.translation_.y += 1.0f;
+		if (attackTimer_ <= 0.0f)
+		{
+			isAttacking_ = false;
+		}
 	}
+
 
 	//Transformに反映
 	worldTransformAction.translation_ = positionAction;
@@ -88,36 +88,6 @@ AABB Attack::GetAABB() const
 	return aabb;
 }
 
-bool Attack::CheckMapChipCollisionRight()
-{ // 右側の座標
-	Vector3 rightPos = worldTransform_.translation_;
-
-	rightPos.x += kWidth / 2.0f;
-
-	MapChipField::IndexSet indexSet;
-
-	indexSet =
-		mapChipField_->GetMapChipIndexSetByPosition(rightPos);
-
-	// 追加
-	assert(indexSet.xIndex >= 0);
-	assert(indexSet.yIndex >= 0);
-
-	MapChipType mapChipType =
-		mapChipField_->GetMapChipTypeByIndex(
-			indexSet.xIndex,
-			indexSet.yIndex);
-
-	if (mapChipType == MapChipType::kBlock) {
-
-		if (isAction) {
-
-			return true;
-		}
-	}
-
-	return false;
-}
 
 
 
@@ -125,7 +95,7 @@ void Attack::Update() {
 	//単発の攻撃
 	Action();
 
-	CheckMapChipCollisionRight();
+
 
 	// 行列更新
 	worldTransform_.TransferMatrix();
