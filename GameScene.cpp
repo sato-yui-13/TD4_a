@@ -214,11 +214,11 @@ void GameScene::Update()
 		//		std::cout << "プレイヤー被弾！" << std::endl;
 		//	}
 		//}
-
-		if (IsCollision(player_->GetAABB(),
-			boss_->GetAttackAABB()))
+		
+		//追尾の当たり判定-2
+		if (IsCollision(player_->GetAABB(),boss_->GetAttackAABB()))
 		{
-			player_->hp_--;
+			player_->TakeDamage(2);
 
 			boss_->SetAttackEnd();
 		}
@@ -243,6 +243,19 @@ void GameScene::Update()
 			attackBox.min.z += forward.z * attackRange;
 			attackBox.max.z += forward.z * attackRange;
 
+			//player攻撃と追尾の当たり判定
+			if (attack_->IsAttacking() &&boss_->IsAttacking())
+			{
+				if (IsCollision(
+					attackBox,
+					boss_->GetAttackAABB()))
+				{
+					std::cout << "弾を破壊！\n";
+
+					boss_->SetAttackEnd();
+				}
+			}
+
 			// ボスとの当たり判定
 			if (IsCollision(attackBox, boss_->GetAABB()))
 			{
@@ -250,8 +263,6 @@ void GameScene::Update()
 				boss_->TakeDamage(2);
 			}
 		}
-
-
 
 		//ブロックの更新
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)
@@ -328,6 +339,17 @@ void GameScene::Update()
 			///scene_ = Scene::kClear;    // ← これで画面も切り替わる
 			std::cout << "CLEAR!!\n";
 		}
+
+		// プレイヤーが死んだらゲームオーバー画面に行く
+		if (player_->IsDead())
+		{
+			phase_ = Phase::kOver;
+
+			gameOverFlag = true;
+
+			std::cout << "GAME OVER!!\n";
+		}
+
 
 		break;
 	case Phase::kDeath:

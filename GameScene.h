@@ -30,11 +30,13 @@ public:
 	{
 		kPlay,
 		kDeath,
-		kClear
+		kClear,
+		kOver
 	};
 
 	//クリアフラグ
 	int clearFlag = false;
+	int gameOverFlag = false;
 
 	//フェーズの切り替え
 	void ChangePhase();

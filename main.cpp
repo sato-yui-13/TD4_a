@@ -55,6 +55,10 @@ void ChangeScene() {
 				gameScene = new GameScene;
 				gameScene->Initialize();
 
+			} else if (gameScene->gameOverFlag == 1) {
+				scene = Scene::kOver;
+				gameScene = new GameScene;
+				gameScene->Initialize();
 			}
 		
 		break;
@@ -70,6 +74,9 @@ void ChangeScene() {
 
 
 	case Scene::kOver:
+		if (Input::GetInstance()->PushKey(DIK_L)) {
+			scene = Scene::kTitle;
+		}
 		break;
 	}
 }

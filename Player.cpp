@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cassert>
 #include <numbers>
+#include <iostream>
 
 
 void player::Initialize(Model* model, Camera* camera, const Vector3& position)
@@ -579,6 +580,17 @@ Vector3 player::CornerPosition(const Vector3& center, Corner corner)
 	return center + offsetTable[static_cast<uint32_t>(corner)];
 }
 
+void player::TakeDamage(int damage)
+{
+	hp_ -= damage;
+
+	if (hp_ < 0)
+	{
+		hp_ = 0;
+	}
+
+	std::cout << "プレイヤーHP: " << hp_ << std::endl;
+}
 
 AABB player::GetAABB() const
 {

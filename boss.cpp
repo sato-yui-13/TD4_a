@@ -75,7 +75,7 @@ AABB boss::GetAttackAABB() const
 	{
 		Vector3 center = attackPosition_;
 
-		Vector3 halfSize = { 0.5f, 0.5f, 0.5f };
+		Vector3 halfSize = { 0.2f, 0.2f, 0.2f };
 
 		AABB aabb;
 		aabb.min = {

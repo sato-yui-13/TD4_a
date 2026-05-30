@@ -92,7 +92,7 @@ public:
 
 	//死んだとき
 	bool IsDead() const { return hp_ <= 0; }
-	int hp_ = 20; // ← ボスのHP
+	void TakeDamage(int damage);
 private:
 
 	// ワールド変換データ
@@ -180,5 +180,5 @@ private:
 	float blinkStartRotY_ = 0.0f;
 	float blinkTargetRotY_ = 0.0f;
 	//const float kBlinkDistance = 8.0f;
-
+	int hp_ = 2; // ← ボスのHP
 };

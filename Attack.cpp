@@ -21,6 +21,8 @@ void Attack::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 	modelAction = Model::CreateFromOBJ("action", true);
 
+	// 弾の当たり判定サイズを設定
+	size_ = { 0.7f, 1.0f, 0.7f };// ←ここを小さくすれば弾の当たり判定も小さくなる
 
 	worldTransform_.TransferMatrix();
 	//攻撃
@@ -72,7 +74,7 @@ AABB Attack::GetAABB() const
 	Vector3 p = worldTransform_.translation_;
 
 	AABB aabb;
-
+	
 	aabb.min = {
 		p.x - size_.x,
 		p.y - size_.y,
