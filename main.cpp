@@ -7,6 +7,13 @@ using namespace KamataEngine;
 GameScene* gameScene = nullptr;
 
 
+
+// グローバルかクラス内で
+bool bgmStarted = false;
+//BGM
+uint32_t BGMHandle = 0;
+uint32_t voiceHandle = 0;
+
 //シーン切り替え
 enum class Scene {
 	kUnknown = 0,
@@ -20,10 +27,16 @@ Scene scene = Scene::kTitle;
 //ゲームシーンのインスタンス生成
 // 02_12 29枚目
 void ChangeScene() {
-	
+	// BGMがまだ再生されていなければ
+	if (!bgmStarted) {
+		BGMHandle = Audio::GetInstance()->LoadWave("sound/Start_moving_now.mp3");
+		voiceHandle = Audio::GetInstance()->PlayWave(BGMHandle, true, 0.2f);
+		bgmStarted = true;  // これ以降は再生しない
+	}
+
 	
 	switch (scene) {
-
+		
 	case Scene::kTitle:
 		if (Input::GetInstance()->PushKey(DIK_L)) {
 			scene = Scene::kGame;
@@ -36,6 +49,7 @@ void ChangeScene() {
 		break;
 
 	case Scene::kGame:
+		
 			if (gameScene->clearFlag == 1) {
 				scene = Scene::kClear;
 				gameScene = new GameScene;
@@ -46,8 +60,6 @@ void ChangeScene() {
 		break;
 
 	case Scene::kClear:
-
-	
 
 		if (Input::GetInstance()->PushKey(DIK_L)) {
 			scene = Scene::kTitle;
