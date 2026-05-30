@@ -6,8 +6,8 @@
 #include "boss.h"
 #include "Attack.h"
 #include "CameraController.h"
+//#include "Skydome.h"
 #include <vector>
-
 
 //ゲームシーン
 class GameScene
@@ -35,6 +35,7 @@ public:
 
 	//クリアフラグ
 	int clearFlag = false;
+
 	//フェーズの切り替え
 	void ChangePhase();
 
@@ -58,7 +59,11 @@ private:
 	player* player_;
 
 	boss* boss_;
+
 	Attack* attack_;
+
+	//Skydome* skydome_ = nullptr;
+
 	CameraController* cameraController_ = nullptr;
 
 	//--------------------3Dモデル----------------------//
@@ -66,7 +71,10 @@ private:
 	KamataEngine::Model* modelBlock_ = nullptr;
 	KamataEngine::Model* modelPlayer_ = nullptr;
 	KamataEngine::Model* modelBoss_ = nullptr;
+	//アタックモデル
+	KamataEngine::Model* boss_at_model_ = nullptr;
 	KamataEngine::Model* modelattack_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 
 	//デバックカメラ有効
 	bool isDebugCameraActive_ = false;

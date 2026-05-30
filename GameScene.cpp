@@ -3,6 +3,7 @@
 #include <algorithm>
 #undef min
 
+
 using namespace KamataEngine;
 
 Vector3 GetOverlap(const AABB& a, const AABB& b)
@@ -65,6 +66,7 @@ void ResolveCollision(Vector3& playerPos, Vector3& bossPos, const AABB& playerBo
 	}
 }
 
+
 GameScene::~GameScene()
 {
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)
@@ -76,7 +78,6 @@ GameScene::~GameScene()
 	}
 	worldTransformBlocks_.clear();
 
-
 	//--------------------3Dモデルデータの解放----------------------//
 	delete player_;
 	delete modelPlayer_;
@@ -84,6 +85,8 @@ GameScene::~GameScene()
 	delete modelBlock_;
 	delete mapChipField_;
 	delete debugCamera_;
+	delete boss_at_model_;
+	delete attack_;
 }
 
 void GameScene::Initialize()
@@ -112,7 +115,6 @@ void GameScene::Initialize()
 	CameraController::Rect cameraArea = { 12.0f,100 - 12.0f,6.0f,6.0f };
 	cameraController_->SetMovebleArea(cameraArea);
 
-
 	Vector3 center = mapChipField_->GetCenterPosition();
 
 	//カメラの位置
@@ -129,24 +131,37 @@ void GameScene::Initialize()
 	modelPlayer_ = Model::CreateFromOBJ("player", true);/*自機*/
 	modelBoss_ = Model::CreateFromOBJ("boss", true);/*ボス*/
 	modelattack_ = Model::CreateFromOBJ("action", true);
-	GenerateBlocks();
+	//modelSkydome_ = Model::CreateFromOBJ("skyDome", true);/*天球*/
 
+	// サウンドデータの読み込み
+	/*BGMHandle = Audio::GetInstance()->LoadWave("sound/1123.mp3");
+	voiceHandle = Audio::GetInstance()->PlayWave(BGMHandle, true, 0.1f);*/
+
+	// skydome生成
+	//skydome_ = new Skydome();
+	// 初期化
+	//skydome_->Initialize(modelSkydome_, &camera_);
+
+	GenerateBlocks();
 
 	player_->SetMapChipField(mapChipField_);
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 5);
-
 	Vector3 BossPosition = mapChipField_->GetMapChipPositionByIndex(50, 10);
 
 	playerPosition.y += 1.0f;
+	BossPosition.y += 1.0f;
 
 	player_->Initialize(modelPlayer_, &camera_, playerPosition);
 	boss_->Initialize(modelBoss_, &camera_, BossPosition);
-	
-	
+
+	boss_at_model_ = Model::CreateFromOBJ("bullet");
+	boss_->atInitialize(boss_at_model_, &camera_, boss_->attackPosition_);
+
+	cameraController_->Reset();
+
 	attack_ = new Attack();
 	attack_->Initialize(modelattack_, &camera_, playerPosition);
-
 
 	//ゲームタイトルから開始
 	phase_ = Phase::kPlay;
@@ -160,16 +175,17 @@ void GameScene::Update()
 	{
 	case Phase::kPlay:
 
+		//skydome更新
+		//skydome_->Update();
+
 		//自機の更新
 		player_->Update();
 		Vector3 playerPos = player_->GetWorldPosition();
 		//敵の更新
 		boss_->Update();
 		Vector3 bossPos = boss_->GetWorldPosition();
-
-
-
-
+		boss_->atUpdate();
+		boss_->SetPlayer(player_);
 		// ここで当たり判定
 		//AABB取得
 		AABB playerBox = player_->GetAABB();
@@ -186,7 +202,6 @@ void GameScene::Update()
 		}
 
 
-		// GameScene内
 		attack_->Update(); // 攻撃の時間管理と入力処理
 
 		// 攻撃中ならボスとの判定
@@ -215,7 +230,6 @@ void GameScene::Update()
 				boss_->TakeDamage(2);
 			}
 		}
-
 
 
 
@@ -286,20 +300,20 @@ void GameScene::Update()
 		//ボス倒したらクリア画面に行く
 		if (boss_->IsDead())
 		{
+			phase_ = Phase::kClear;
+
 			clearFlag = true;
-			
+
 			//phase_ = Phase::kClear;   // 内部フラグは残す
 			///scene_ = Scene::kClear;    // ← これで画面も切り替わる
 			std::cout << "CLEAR!!\n";
 		}
-
 
 		break;
 	case Phase::kDeath:
 
 		//敵の更新
 		boss_->Update();
-		/*Vector3 bossPos = boss_->GetWorldPosition();*/
 
 		//ブロックの更新
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)
@@ -356,13 +370,14 @@ void GameScene::Update()
 
 void GameScene::Draw()
 {
-
-
+	
 	Model::PreDraw();
 
 	player_->Draw();
 	boss_->Draw();
-
+	boss_->atDraw();
+	// 天球描画
+	//skydome_->Draw();
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)
@@ -376,7 +391,6 @@ void GameScene::Draw()
 	}
 
 	Model::PostDraw();
-
 }
 
 void GameScene::GenerateBlocks()
@@ -400,8 +414,7 @@ void GameScene::GenerateBlocks()
 		for (uint32_t j = 0; j < numBlockHorizontal; ++j)
 		{
 			// マップチップ種類を取得
-			MapChipType type =
-				mapChipField_->GetMapChipTypeByIndex(j, i);
+			MapChipType type = mapChipField_->GetMapChipTypeByIndex(j, i);
 
 			// 空白なら作らない
 			if (type == MapChipType::kBlank)
@@ -409,15 +422,12 @@ void GameScene::GenerateBlocks()
 				continue;
 			}
 
-			WorldTransform* worldTransform =
-				new WorldTransform();
+			WorldTransform* worldTransform = new WorldTransform();
 
 			worldTransform->Initialize();
 
 			worldTransformBlocks_[i][j] = worldTransform;
-
-			worldTransformBlocks_[i][j]->translation_ =
-				mapChipField_->GetMapChipPositionByIndex(j, i);
+			worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
 
 			// 床
 			if (type == MapChipType::kBlock)
@@ -431,7 +441,6 @@ void GameScene::GenerateBlocks()
 
 				worldTransformBlocks_[i][j]->translation_.y = -0.05f;
 			}
-
 			// 壁
 			if (type == MapChipType::kWall)
 			{
@@ -454,7 +463,6 @@ void GameScene::ChangePhase()
 	switch (phase_)
 	{
 	case GameScene::Phase::kPlay:
-
 		break;
 	case GameScene::Phase::kDeath:
 		break;

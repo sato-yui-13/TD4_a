@@ -2,17 +2,17 @@
 #include "KamataEngine.h"
 #include "UpDate.h"
 #include "MyMath.h"
+#include "Player.h"
 using namespace KamataEngine;
-
+class player;
 class boss
 {
 public:
+
 	/// 初期化
 	void Initialize(Model* model, Camera* camera, const Vector3& position);
-
 	/// 更新
 	void Update();
-
 	/// 描画
 	void Draw();
 
@@ -29,15 +29,17 @@ public:
 	//アタックポジション
 	Vector3 attackPosition_ = { 0.0f,1.0f,1.0f };
 
-
 	//プレイヤーとのボックス当たり判定
 	AABB GetAABB() const;
 	void SetWorldPosition(const Vector3& pos);
+
 	//hp計算用の
 	void TakeDamage(int damage);
 	int GetHP() const { return hp_; }
 	//死んだとき
 	bool IsDead() const { return hp_ <= 0; }
+	//プレイヤーの位置取得して追尾用
+	void SetPlayer(player* player);
 private:
 	//上下に動く敵をつくる
 
@@ -46,7 +48,6 @@ private:
 
 	// モデル
 	Model* model_ = nullptr;
-
 	//カメラ
 	Camera* camera_ = nullptr;
 	//アップデート
@@ -57,6 +58,9 @@ private:
 
 	//スピード
 	float BossSpeed = 5.5f;
+
+	//プレイヤー
+	player* player_ = nullptr;
 
 	//跳ね返る位置
 	//上の最大sa値
@@ -98,6 +102,7 @@ private:
 	Vector3 bulletVelocity_;       // ★新設：直線射撃の進む速度ベクトル
 	// --- Boss.h の private 変数群に追記 ---
 	float attackStartRotationY_ = 0.0f; // ★新設：攻撃開始時のボスの向きを記録する変数
-	
+
 	int hp_ = 50; // ← ボスのHP
+
 };

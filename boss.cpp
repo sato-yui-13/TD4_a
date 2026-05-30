@@ -10,44 +10,36 @@ using namespace KamataEngine;
 
 void boss::Initialize(Model* model, Camera* camera, const Vector3& position)
 {
-    assert(model);
+	assert(model);
 
-    model_ = model;
-    camera_ = camera;
+	model_ = model;
+	camera_ = camera;
 
-    worldTransform_.Initialize();
-    worldTransform_.translation_ = position;
-    // 向き
-    worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.Initialize();
+	worldTransform_.translation_ = position;
+	// 向き
+	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
-	atWorldTransform_.Initialize();
-	atWorldTransform_.translation_ = position;
-	atWorldTransform_.rotation_ = { 0.0f, 0.0f, 0.0f };
-	atWorldTransform_.scale_ = { 1.0f, 1.0f, 1.0f };
+	// ★ 生成位置を中心に上下移動する範囲を設定
+	float moveRange = 2.0f;
+	min = position.y - moveRange;
+	max = position.y + moveRange;
 
-	bossPosition_ = position;
-	bossTargetPosition_ = position;
-	attackPosition_ = position;
+	player_ = new player();
 
-
-    // ★ 生成位置を中心に上下移動する範囲を設定
-    float moveRange = 2.0f;
-    min = position.y - moveRange;
-    max = position.y + moveRange;
-
-    worldTransform_.TransferMatrix();
+	worldTransform_.TransferMatrix();
 }
 
 Vector3 boss::GetWorldPosition()
 {
-    Vector3 worldPos{};
-    worldPos.x = worldTransform_.matWorld_.m[3][0];
-    worldPos.y = worldTransform_.matWorld_.m[3][1];
-    worldPos.z = worldTransform_.matWorld_.m[3][2];
-    return worldPos;
+	Vector3 worldPos{};
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }
 
-void WorldTransformUpdate(WorldTransform& worldTransform) 
+void WorldTransformUpdate(WorldTransform& worldTransform)
 {
 
 	Matrix4x4 affin_mat = MakeAffineMatrix(worldTransform.scale_, worldTransform.rotation_, worldTransform.translation_);
@@ -57,6 +49,7 @@ void WorldTransformUpdate(WorldTransform& worldTransform)
 	// 定数バッファに転送する
 	worldTransform.TransferMatrix();
 }
+
 AABB boss::GetAABB() const
 {
 	// ボスの中心座標
@@ -77,6 +70,7 @@ void boss::SetWorldPosition(const Vector3& pos)
 	worldTransform_.translation_ = pos;
 }
 
+
 void boss::TakeDamage(int damage)
 {
 	hp_ -= damage;
@@ -87,6 +81,11 @@ void boss::TakeDamage(int damage)
 	}
 
 	std::cout << "ボスHP: " << hp_ << std::endl;
+}
+
+void boss::SetPlayer(player* player)
+{
+	player_ = player;
 }
 
 void boss::Update()
@@ -101,15 +100,17 @@ void boss::Update()
 	// =======================================================
 		// パターン0：【移動中】の処理
 		// =======================================================
-	if (bossState_ == 0) {
+	if (bossState_ == 0)
+	{
 
 		moveTimer_ += 1.0f;
-		if (moveTimer_ >= moveInterval_) {
+		if (moveTimer_ >= moveInterval_)
+		{
 			moveTimer_ = 0.0f;
 
 			std::random_device seed_gen;
 			std::mt19937 engine(seed_gen());
-			std::uniform_int_distribution<int> dist(2, 8);
+			std::uniform_int_distribution<int> dist(10, 40);
 
 			bossTargetPosition_.x = static_cast<float>(dist(engine)) * kBlockSize;
 			bossTargetPosition_.z = static_cast<float>(dist(engine)) * kBlockSize;
@@ -124,12 +125,14 @@ void boss::Update()
 
 		// ─── ★【ここをステップ移動に修正】★ ───
 		// 目的地から「0.05（5cm）」以上離れている間は、残りの距離の 8% ずつ進む
-		if (distance > 0.05f) {
+		if (distance > 0.05f)
+		{
 			// 0.08f (8%) の数値を大きくするとより鋭いダッシュになり、小さくするとマイルドになります
 			float easeSpeed = 0.08f;
 			bossPosition_.x += toTargetX * easeSpeed;
 			bossPosition_.z += toTargetZ * easeSpeed;
-		} else {
+		} else
+		{
 			// ── 目的地にほぼ到着した瞬間 ──
 			// ズレをなくすためにピタッと座標を合わせる
 			bossPosition_.x = bossTargetPosition_.x;
@@ -151,13 +154,15 @@ void boss::Update()
 			float distToPlayer = std::sqrtf(toPlayerX * toPlayerX + toPlayerZ * toPlayerZ);
 
 			// ── 距離に応じて攻撃パターンを切り替える ──
-			if (distToPlayer <= 2.0f) {
+			if (distToPlayer <= 2.0f)
+			{
 				attackPattern_ = 0; // 2マス以内なら回転攻撃
-			} else {
+			} else
+			{
 				attackPattern_ = 1; // 2マスより離れているなら直線射撃
 
 				// 射撃の速度ベクトルを計算
-				float shootSpeed = 0.2f;
+				float shootSpeed = 0.6f;
 				bulletVelocity_.x = std::sinf(attackStartRotationY_) * shootSpeed;
 				bulletVelocity_.z = std::cosf(attackStartRotationY_) * shootSpeed;
 			}
@@ -168,19 +173,24 @@ void boss::Update()
 	// =======================================================
 	// パターン1：【攻撃中（その場で停止）】の処理
 	// =======================================================
-	else if (bossState_ == 1) {
+	else if (bossState_ == 1)
+	{
 
-		if (isAttacking_) {
+		if (isAttacking_)
+		{
 
 			// ─── 【攻撃パターン0：回転攻撃】 ───
-			if (attackPattern_ == 0) {
+			if (attackPattern_ == 0)
+			{
 				frameCount_ += 1.0f;
 				float t = frameCount_ / maxFrame_;
 
-				if (t >= 1.0f) {
+				if (t >= 1.0f)
+				{
 					isAttacking_ = false;
 					attackWaitTimer_ = 0.0f;
-				} else {
+				} else
+				{
 					float easedT = t * t;
 
 					// 円を描くための基本角度 (0 〜 -360度)
@@ -199,29 +209,51 @@ void boss::Update()
 				}
 			}
 			// ─── 【攻撃パターン1：直線射撃攻撃】 ───
-			else if (attackPattern_ == 1) {
-				// 速度ベクトル（これもロック時の角度で計算済み）を足し続ける
-				attackPosition_.x += bulletVelocity_.x;
-				attackPosition_.z += bulletVelocity_.z;
+			else if (attackPattern_ == 1)
+			{
+				// プレイヤーの現在位置を取得
+				Vector3 playerPos = player_->GetWorldPosition();
+
+				// 攻撃の現在位置からプレイヤーへの方向ベクトル
+				float toPlayerX = playerPos.x - attackPosition_.x;
+				float toPlayerZ = playerPos.z - attackPosition_.z;
+
+				// 正規化
+				float length = std::sqrtf(toPlayerX * toPlayerX + toPlayerZ * toPlayerZ);
+				if (length > 0.001f)
+				{
+					toPlayerX /= length;
+					toPlayerZ /= length;
+				}
+
+				// 移動速度
+				float speed = 0.3f; // 好みで調整
+
+				// 攻撃位置を更新
+				attackPosition_.x += toPlayerX * speed;
+				attackPosition_.z += toPlayerZ * speed;
 
 				frameCount_ += 1.0f;
-				if (frameCount_ >= 60.0f) {
+				if (frameCount_ >= 60.0f)
+				{
 					isAttacking_ = false;
 					attackWaitTimer_ = 0.0f;
 				}
 			}
-		} else {
+		} else
+		{
 			// ─── 待機時間（1.5秒に延長中） ───
 			attackPosition_ = bossPosition_;
 
 			attackWaitTimer_ += 1.0f;
-			if (attackWaitTimer_ >= 90.0f) {
+			if (attackWaitTimer_ >= 60.0f)
+			{
 				bossState_ = 0;
 				moveTimer_ = 0.0f;
 
 				std::random_device seed_gen;
 				std::mt19937 engine(seed_gen());
-				std::uniform_int_distribution<int> dist(2, 8);
+				std::uniform_int_distribution<int> dist(10, 40);
 				bossTargetPosition_.x = static_cast<float>(dist(engine)) * kBlockSize;
 				bossTargetPosition_.z = static_cast<float>(dist(engine)) * kBlockSize;
 			}
@@ -243,10 +275,6 @@ void boss::Update()
 	// 攻撃（at変数）の更新（ボス本体の rotation_ から完全に独立しました！）
 	atWorldTransform_.translation_ = attackPosition_;
 	WorldTransformUpdate(atWorldTransform_);
-
-
-    //// 行列更新
-    //worldTransform_.TransferMatrix();
 }
 
 void boss::Draw()
@@ -256,5 +284,30 @@ void boss::Draw()
 	alpha -= 0.1f / 60.0f;
 	model_->SetAlpha(alpha);
 
-    model_->Draw(worldTransform_, *camera_);
+	model_->Draw(worldTransform_, *camera_);
+}
+
+void boss::atInitialize(Model* model, Camera* camera, const Vector3& position)
+{
+	// NULLチェック
+	assert(model);
+
+	// メンバ変数の追加
+	atModel_ = model;
+	atCamera_ = camera;
+	atWorldTransform_.Initialize();
+	atWorldTransform_.translation_ = position;
+}
+
+void boss::atUpdate()
+{
+
+}
+
+void boss::atDraw()
+{
+	if (isAttacking_ == true)
+	{
+		atModel_->Draw(atWorldTransform_, *atCamera_);
+	}
 }
