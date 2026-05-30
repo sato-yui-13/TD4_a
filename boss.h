@@ -33,13 +33,29 @@ public:
 	AABB GetAABB() const;
 	void SetWorldPosition(const Vector3& pos);
 
+	//追尾の弾との当たり判定
+	AABB GetAttackAABB() const;
+
+
 	//hp計算用の
 	void TakeDamage(int damage);
 	int GetHP() const { return hp_; }
+
 	//死んだとき
 	bool IsDead() const { return hp_ <= 0; }
 	//プレイヤーの位置取得して追尾用
 	void SetPlayer(player* player);
+
+	bool IsAttacking() const
+	{
+		return isAttacking_;
+	}
+
+	void SetAttackEnd()
+	{
+		isAttacking_ = false;
+	}
+
 private:
 	//上下に動く敵をつくる
 

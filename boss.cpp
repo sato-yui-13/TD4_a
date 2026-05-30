@@ -70,6 +70,30 @@ void boss::SetWorldPosition(const Vector3& pos)
 	worldTransform_.translation_ = pos;
 }
 
+AABB boss::GetAttackAABB() const
+{
+	{
+		Vector3 center = attackPosition_;
+
+		Vector3 halfSize = { 0.5f, 0.5f, 0.5f };
+
+		AABB aabb;
+		aabb.min = {
+			center.x - halfSize.x,
+			center.y - halfSize.y,
+			center.z - halfSize.z
+		};
+
+		aabb.max = {
+			center.x + halfSize.x,
+			center.y + halfSize.y,
+			center.z + halfSize.z
+		};
+
+		return aabb;
+	}
+}
+
 
 void boss::TakeDamage(int damage)
 {

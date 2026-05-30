@@ -86,8 +86,13 @@ public:
 		return worldTransform_;
 	}
 
-	bool IsDead() const { return isDead_; }
+	//bool IsDead() const { return isDead_; }
 	void SetWorldPosition(const Vector3& pos);
+
+
+	//死んだとき
+	bool IsDead() const { return hp_ <= 0; }
+	int hp_ = 20; // ← ボスのHP
 private:
 
 	// ワールド変換データ

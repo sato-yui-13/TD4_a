@@ -204,6 +204,26 @@ void GameScene::Update()
 
 		attack_->Update(); // 攻撃の時間管理と入力処理
 
+
+		////追尾攻撃の当たり判定
+		//if (boss_->IsAttacking())
+		//{
+		//	if (IsCollision(player_->GetAABB(),
+		//		boss_->GetAttackAABB()))
+		//	{
+		//		std::cout << "プレイヤー被弾！" << std::endl;
+		//	}
+		//}
+
+		if (IsCollision(player_->GetAABB(),
+			boss_->GetAttackAABB()))
+		{
+			player_->hp_--;
+
+			boss_->SetAttackEnd();
+		}
+
+
 		// 攻撃中ならボスとの判定
 		if (attack_->IsAttacking())
 		{
