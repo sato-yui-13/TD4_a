@@ -147,7 +147,7 @@ void GameScene::Initialize()
 	player_->SetMapChipField(mapChipField_);
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(5, 5);
-	Vector3 BossPosition = mapChipField_->GetMapChipPositionByIndex(50, 10);
+	Vector3 BossPosition = mapChipField_->GetMapChipPositionByIndex(20, 10);
 
 	playerPosition.y += 1.0f;
 	BossPosition.y += 1.0f;
@@ -205,16 +205,6 @@ void GameScene::Update()
 		attack_->Update(); // 攻撃の時間管理と入力処理
 
 
-		////追尾攻撃の当たり判定
-		//if (boss_->IsAttacking())
-		//{
-		//	if (IsCollision(player_->GetAABB(),
-		//		boss_->GetAttackAABB()))
-		//	{
-		//		std::cout << "プレイヤー被弾！" << std::endl;
-		//	}
-		//}
-		
 		//追尾の当たり判定-2
 		if (IsCollision(player_->GetAABB(),boss_->GetAttackAABB()))
 		{

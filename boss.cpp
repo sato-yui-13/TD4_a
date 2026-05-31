@@ -27,6 +27,12 @@ void boss::Initialize(Model* model, Camera* camera, const Vector3& position)
 
 	player_ = new player();
 
+	// ──────────────── 追加部分 ────────────────
+	bossPosition_ = position;
+	bossTargetPosition_ = position;
+	attackPosition_ = position;
+	// ───────────────────────────────────────
+
 	worldTransform_.TransferMatrix();
 }
 
