@@ -180,5 +180,5 @@ private:
 	float blinkStartRotY_ = 0.0f;
 	float blinkTargetRotY_ = 0.0f;
 	//const float kBlinkDistance = 8.0f;
-	int hp_ = 2; // ← ボスのHP
+	int hp_ = 20; // ← ボスのHP
 };

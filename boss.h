@@ -4,6 +4,14 @@
 #include "MyMath.h"
 #include "Player.h"
 using namespace KamataEngine;
+
+struct Bullet
+{
+	Vector3 position;
+	Vector3 velocity;
+};
+
+
 class player;
 class boss
 {
@@ -27,7 +35,7 @@ public:
 	//ボスポジション
 	Vector3 bossPosition_ = { 0.0f,1.0f,0.0f };
 	//アタックポジション
-	Vector3 attackPosition_ = { 0.0f,1.0f,1.0f };
+	Vector3 attackPosition_ = {0.0f,1.0f,1.0f};
 
 	//プレイヤーとのボックス当たり判定
 	AABB GetAABB() const;
@@ -36,7 +44,8 @@ public:
 	//追尾の弾との当たり判定
 	AABB GetAttackAABB() const;
 
-
+	// boss.h の private に追加
+	std::vector<Bullet> bullets_;
 	//hp計算用の
 	void TakeDamage(int damage);
 	int GetHP() const { return hp_; }

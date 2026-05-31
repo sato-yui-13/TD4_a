@@ -30,6 +30,7 @@ void boss::Initialize(Model* model, Camera* camera, const Vector3& position)
 	// ──────────────── 追加部分 ────────────────
 	bossPosition_ = position;
 	bossTargetPosition_ = position;
+	
 	attackPosition_ = position;
 	// ───────────────────────────────────────
 
@@ -241,27 +242,10 @@ void boss::Update()
 			// ─── 【攻撃パターン1：直線射撃攻撃】 ───
 			else if (attackPattern_ == 1)
 			{
-				// プレイヤーの現在位置を取得
-				Vector3 playerPos = player_->GetWorldPosition();
-
-				// 攻撃の現在位置からプレイヤーへの方向ベクトル
-				float toPlayerX = playerPos.x - attackPosition_.x;
-				float toPlayerZ = playerPos.z - attackPosition_.z;
-
-				// 正規化
-				float length = std::sqrtf(toPlayerX * toPlayerX + toPlayerZ * toPlayerZ);
-				if (length > 0.001f)
-				{
-					toPlayerX /= length;
-					toPlayerZ /= length;
-				}
-
-				// 移動速度
-				float speed = 0.3f; // 好みで調整
-
-				// 攻撃位置を更新
-				attackPosition_.x += toPlayerX * speed;
-				attackPosition_.z += toPlayerZ * speed;
+				// ── 発射時に決めた固定方向を使う ──
+				float speed = 0.3f; // 弾の速度
+				attackPosition_.x += bulletVelocity_.x * speed;
+				attackPosition_.z += bulletVelocity_.z * speed;
 
 				frameCount_ += 1.0f;
 				if (frameCount_ >= 60.0f)

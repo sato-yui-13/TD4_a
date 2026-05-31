@@ -83,6 +83,6 @@ private:
 
 	//ゲームの現在のフェーズ
 	Phase phase_;
-
+	float deltaTime = 0.0f;
 };
 

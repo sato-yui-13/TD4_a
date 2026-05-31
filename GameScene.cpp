@@ -184,7 +184,7 @@ void GameScene::Update()
 		//敵の更新
 		boss_->Update();
 		Vector3 bossPos = boss_->GetWorldPosition();
-		boss_->atUpdate();
+		//boss_->atUpdate();
 		boss_->SetPlayer(player_);
 		// ここで当たり判定
 		//AABB取得
@@ -206,12 +206,14 @@ void GameScene::Update()
 
 
 		//追尾の当たり判定-2
-		if (IsCollision(player_->GetAABB(),boss_->GetAttackAABB()))
+		/*if (IsCollision(player_->GetAABB(),boss_->GetAttackAABB()))
 		{
 			player_->TakeDamage(2);
 
 			boss_->SetAttackEnd();
-		}
+		}*/
+
+		
 
 
 		// 攻撃中ならボスとの判定
@@ -233,18 +235,18 @@ void GameScene::Update()
 			attackBox.min.z += forward.z * attackRange;
 			attackBox.max.z += forward.z * attackRange;
 
-			//player攻撃と追尾の当たり判定
-			if (attack_->IsAttacking() &&boss_->IsAttacking())
-			{
-				if (IsCollision(
-					attackBox,
-					boss_->GetAttackAABB()))
-				{
-					std::cout << "弾を破壊！\n";
+			////player攻撃と追尾の当たり判定
+			//if (attack_->IsAttacking() &&boss_->IsAttacking())
+			//{
+			//	if (IsCollision(
+			//		attackBox,
+			//		boss_->GetAttackAABB()))
+			//	{
+			//		std::cout << "弾を破壊！\n";
 
-					boss_->SetAttackEnd();
-				}
-			}
+			//		boss_->SetAttackEnd();
+			//	}
+			//}
 
 			// ボスとの当たり判定
 			if (IsCollision(attackBox, boss_->GetAABB()))
@@ -410,6 +412,9 @@ void GameScene::Draw()
 	boss_->atDraw();
 	// 天球描画
 	//skydome_->Draw();
+
+
+
 
 	//ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_)
